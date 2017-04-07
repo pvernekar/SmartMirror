@@ -56,9 +56,8 @@ class SmartCarousel(Frame):
         self.config(bg='white')
         self.title = 'Try Out Your Looks'
         self.newsLbl = Label(self, text=self.title, font=('Helvetica', large_text_size), fg="black", bg="white")
-        self.newsLbl.pack(side=TOP, anchor=W)
+        self.newsLbl.pack()
         self.delay = 3500
-        self.counter = 0
 
         image = Image.open("assets/red.jpg")
         image = image.resize((500, 500), Image.ANTIALIAS)
@@ -69,9 +68,9 @@ class SmartCarousel(Frame):
         self.picture_display.image = photo
         self.picture_display.pack(side=LEFT, anchor=N)
 
-    def show_slides(self):
+    def show_slides(self, imageCounter):
 
-        buffImage = image_files[self.counter]
+        buffImage = image_files[imageCounter]
         image = Image.open(buffImage)
         image = image.resize((500, 500), Image.ANTIALIAS)
         image = image.convert('RGB')
@@ -80,13 +79,6 @@ class SmartCarousel(Frame):
         self.picture_display.image = photo
         self.picture_display.config(image=photo)
         self.picture_display.pack(side=LEFT, anchor=N)
-
-        self.counter = self.counter + 1
-
-        if self.counter == 5:
-                self.counter = 0
-
-        self.after(self.delay, self.show_slides)
 
 
 class CarouselMirror(Frame):
@@ -104,8 +96,17 @@ class CarouselMirror(Frame):
             self.tk.bind("<Return>", self.toggle_fullscreen)
             self.tk.bind("<Escape>", self.end_fullscreen)
             self.sCarousel = SmartCarousel(parent=self.bottomFrame)
-            self.sCarousel.pack(side=LEFT, anchor=S, padx=100, pady=60)
-            self.sCarousel.show_slides()
+            self.sCarousel.pack(side=TOP)
+            #self.sCarousel.show_slides()
+            self.counter = 0
+            button = Button(command=self.buttonClick)
+            image = Image.open("assets/try-me.png")
+            #image = image.resize((500, 500), Image.ANTIALIAS)
+            image = image.convert('RGB')
+            buttonIconImage = ImageTk.PhotoImage(image)
+            button.image = buttonIconImage
+            button.configure(image=buttonIconImage)
+            button.pack(side=BOTTOM)
 
         def toggle_fullscreen(self, event=None):
             self.state = not self.state  # Just toggling the boolean
@@ -116,6 +117,14 @@ class CarouselMirror(Frame):
             self.state = False
             self.tk.attributes("-fullscreen", False)
             return "break"
+
+        def buttonClick(self):
+            #print('hello button')
+            self.counter = self.counter + 1
+
+            if self.counter == 5:
+                self.counter = 0
+            self.sCarousel.show_slides(self.counter)
 
     if __name__ == '__main__':
         w = FullscreenWindow()
